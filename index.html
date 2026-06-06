@@ -9,43 +9,35 @@
 <style>
 
 *{
+    margin:0;
+    padding:0;
     box-sizing:border-box;
 }
 
 body{
-    font-family: Arial, sans-serif;
+    font-family:Arial, sans-serif;
     background:#f4f6f9;
-    margin:0;
     padding:20px;
 }
 
 .container{
-    max-width:1000px;
+    max-width:1200px;
     margin:auto;
 }
 
-h1{
-    text-align:center;
-    color:#222;
-    margin-bottom:30px;
-}
-
-section{
+.card{
     background:white;
     padding:20px;
-    margin-bottom:20px;
     border-radius:12px;
+    margin-bottom:20px;
     box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
 
-h2{
-    margin-top:0;
-    color:#333;
+h1,h2,h3{
+    margin-bottom:15px;
 }
 
-input,
-select,
-button{
+input,select,button{
     padding:10px;
     margin:5px;
 }
@@ -62,16 +54,30 @@ button:hover{
     background:#1d4ed8;
 }
 
+.excluir{
+    background:#dc2626;
+}
+
+.excluir:hover{
+    background:#b91c1c;
+}
+
+.concluir{
+    background:#16a34a;
+}
+
+.concluir:hover{
+    background:#15803d;
+}
+
 table{
     width:100%;
     border-collapse:collapse;
-    margin-top:10px;
 }
 
-th, td{
+th,td{
     border:1px solid #ddd;
     padding:10px;
-    text-align:left;
 }
 
 th{
@@ -79,385 +85,704 @@ th{
 }
 
 ul{
-    padding-left:20px;
+    list-style:none;
 }
 
 li{
-    margin-bottom:8px;
+    margin-bottom:10px;
 }
 
-.form-row{
+.hidden{
+    display:none;
+}
+
+.topo{
     display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
     flex-wrap:wrap;
-    gap:10px;
+}
+
+.info{
+    font-weight:bold;
+}
+
+.status-box{
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
     margin-top:10px;
 }
 
-.form-row input,
-.form-row select{
-    flex:1;
-    min-width:180px;
+.status-item{
+    background:#eef2ff;
+    padding:10px;
+    border-radius:8px;
 }
 
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
 
+<!-- LOGIN -->
+
+<div id="loginCard" class="card">
+
 <h1>🎬 Sistema de Organização Audiovisual</h1>
 
-<section>
+<p>Digite seu nome para acessar seus dados.</p>
+
+<input
+type="text"
+id="usuario"
+placeholder="Seu nome">
+
+<button onclick="entrar()">
+Entrar
+</button>
+
+</div>
+
+<!-- SISTEMA -->
+
+<div id="sistema" class="hidden">
+
+<div class="topo">
+
+<div class="info">
+Usuário: <span id="usuarioAtual"></span>
+</div>
+
+<button onclick="sair()">
+Trocar Usuário
+</button>
+
+</div>
+
+<!-- CHECKLIST -->
+
+<div class="card">
 
 <h2>✅ Checklist de Gravação</h2>
 
 <ul id="checklist"></ul>
 
-<div class="form-row">
-    <input
-    type="text"
-    id="novoItem"
-    placeholder="Novo item do checklist">
+<input
+type="text"
+id="novoChecklist"
+placeholder="Novo item">
 
-    <button onclick="adicionarChecklist()">
-        Adicionar
-    </button>
+<button onclick="adicionarChecklist()">
+Adicionar
+</button>
+
 </div>
 
-</section>
+<!-- EQUIPAMENTOS -->
 
-<section>
+<div class="card">
 
 <h2>🎥 Organizador de Equipamentos</h2>
 
-<table id="equipamentos">
-    <tr>
-        <th>Equipamento</th>
-        <th>Status</th>
-    </tr>
-</table>
+<div class="status-box">
 
-<div class="form-row">
+<div class="status-item">
+Total: <span id="totalEquipamentos">0</span>
+</div>
 
-    <input
-    type="text"
-    id="equipamentoNome"
-    placeholder="Nome do equipamento">
+<div class="status-item">
+Disponíveis: <span id="dispEquipamentos">0</span>
+</div>
 
-    <select id="equipamentoStatus">
-        <option>Disponível</option>
-        <option>Em uso</option>
-        <option>Em manutenção</option>
-    </select>
+<div class="status-item">
+Em uso: <span id="usoEquipamentos">0</span>
+</div>
 
-    <button onclick="adicionarEquipamento()">
-        Adicionar
-    </button>
+<div class="status-item">
+Manutenção: <span id="manEquipamentos">0</span>
+</div>
 
 </div>
 
-</section>
+<br>
 
-<section>
+<table id="equipamentos">
+
+<tr>
+<th>Equipamento</th>
+<th>Status</th>
+<th>Ação</th>
+</tr>
+
+</table>
+
+<br>
+
+<input
+type="text"
+id="equipamentoNome"
+placeholder="Nome do equipamento">
+
+<select id="equipamentoStatus">
+<option>Disponível</option>
+<option>Em uso</option>
+<option>Em manutenção</option>
+</select>
+
+<button onclick="adicionarEquipamento()">
+Adicionar
+</button>
+
+</div>
+
+<!-- AGENDA -->
+
+<div class="card">
 
 <h2>📅 Agenda de Produção</h2>
 
 <ul id="agenda"></ul>
 
-<div class="form-row">
+<input type="date" id="data">
 
-    <input type="date" id="data">
+<input type="time" id="hora">
 
-    <input type="time" id="hora">
+<input
+type="text"
+id="atividade"
+placeholder="Descrição">
 
-    <input
-    type="text"
-    id="atividade"
-    placeholder="Descrição da atividade">
-
-    <button onclick="adicionarAgenda()">
-        Adicionar
-    </button>
+<button onclick="adicionarAgenda()">
+Adicionar
+</button>
 
 </div>
 
-</section>
+<!-- HISTÓRICO -->
+
+<div class="card">
+
+<h2>✔ Histórico de Atividades Concluídas</h2>
+
+<ul id="historico"></ul>
+
+</div>
+
+</div>
 
 </div>
 
 <script>
 
-/* =========================
-   LOCAL STORAGE
-========================= */
+let usuarioAtual = '';
 
-function salvarDados(chave,dados){
+function salvarUsuarios(dados){
     localStorage.setItem(
-        chave,
+        'usuariosAudiovisual',
         JSON.stringify(dados)
     );
 }
 
-function carregarDados(chave){
+function carregarUsuarios(){
+
     const dados =
-    localStorage.getItem(chave);
+    localStorage.getItem(
+        'usuariosAudiovisual'
+    );
 
     return dados
-        ? JSON.parse(dados)
-        : [];
+    ? JSON.parse(dados)
+    : {};
 }
 
-/* =========================
-   CHECKLIST
-========================= */
+function entrar(){
+
+    const nome =
+    document.getElementById('usuario')
+    .value.trim();
+
+    if(nome === ''){
+        alert('Digite um nome.');
+        return;
+    }
+
+    usuarioAtual = nome;
+
+    const usuarios =
+    carregarUsuarios();
+
+    if(!usuarios[nome]){
+
+        usuarios[nome] = {
+
+            checklist:[
+                {
+                    texto:'Câmera',
+                    concluido:false
+                },
+                {
+                    texto:'Tripé',
+                    concluido:false
+                }
+            ],
+
+            equipamentos:[],
+
+            agenda:[],
+
+            historico:[]
+        };
+
+        salvarUsuarios(usuarios);
+    }
+
+    document.getElementById(
+        'usuarioAtual'
+    ).innerText = nome;
+
+    document.getElementById(
+        'loginCard'
+    ).classList.add('hidden');
+
+    document.getElementById(
+        'sistema'
+    ).classList.remove('hidden');
+
+    renderizarTudo();
+}
+
+function sair(){
+
+    usuarioAtual='';
+
+    document.getElementById(
+        'sistema'
+    ).classList.add('hidden');
+
+    document.getElementById(
+        'loginCard'
+    ).classList.remove('hidden');
+}
+
+function obterUsuario(){
+
+    const usuarios =
+    carregarUsuarios();
+
+    return usuarios[usuarioAtual];
+}
+
+function salvarUsuario(dados){
+
+    const usuarios =
+    carregarUsuarios();
+
+    usuarios[usuarioAtual] = dados;
+
+    salvarUsuarios(usuarios);
+}
+
+/* CHECKLIST */
 
 function adicionarChecklist(){
 
     const texto =
-    document.getElementById('novoItem').value;
+    document.getElementById(
+        'novoChecklist'
+    ).value.trim();
 
-    if(texto.trim() === '') return;
+    if(texto==='') return;
 
-    const checklist =
-    carregarDados('checklist');
+    const usuario =
+    obterUsuario();
 
-    checklist.push({
+    usuario.checklist.push({
         texto:texto,
         concluido:false
     });
 
-    salvarDados(
-        'checklist',
-        checklist
-    );
+    salvarUsuario(usuario);
+
+    document.getElementById(
+        'novoChecklist'
+    ).value='';
 
     renderizarChecklist();
-
-    document.getElementById('novoItem').value='';
 }
 
-function alterarChecklist(index,status){
+function alterarChecklist(index){
 
-    const checklist =
-    carregarDados('checklist');
+    const usuario =
+    obterUsuario();
 
-    checklist[index].concluido =
-    status;
+    usuario.checklist[index]
+    .concluido =
+    !usuario.checklist[index]
+    .concluido;
 
-    salvarDados(
-        'checklist',
-        checklist
+    salvarUsuario(usuario);
+}
+
+function excluirChecklist(index){
+
+    const usuario =
+    obterUsuario();
+
+    usuario.checklist.splice(
+        index,1
     );
+
+    salvarUsuario(usuario);
+
+    renderizarChecklist();
 }
 
 function renderizarChecklist(){
 
     const lista =
-    document.getElementById('checklist');
+    document.getElementById(
+        'checklist'
+    );
 
     lista.innerHTML='';
 
-    const checklist =
-    carregarDados('checklist');
+    const usuario =
+    obterUsuario();
 
-    checklist.forEach((item,index)=>{
+    usuario.checklist.forEach(
+    (item,index)=>{
 
         const li =
         document.createElement('li');
 
-        li.innerHTML=`
-            <input
-                type="checkbox"
-                ${item.concluido ? 'checked' : ''}
-                onchange="alterarChecklist(${index}, this.checked)">
-            ${item.texto}
+        li.innerHTML = `
+        <input
+        type="checkbox"
+        ${item.concluido?'checked':''}
+        onchange="alterarChecklist(${index})">
+
+        ${item.texto}
+
+        <button
+        class="excluir"
+        onclick="excluirChecklist(${index})">
+        🗑
+        </button>
         `;
 
         lista.appendChild(li);
     });
-
 }
 
-/* =========================
-   EQUIPAMENTOS
-========================= */
+/* EQUIPAMENTOS */
 
 function adicionarEquipamento(){
 
     const nome =
-    document.getElementById('equipamentoNome').value;
+    document.getElementById(
+        'equipamentoNome'
+    ).value.trim();
 
     const status =
-    document.getElementById('equipamentoStatus').value;
+    document.getElementById(
+        'equipamentoStatus'
+    ).value;
 
-    if(nome.trim() === '') return;
+    if(nome==='') return;
 
-    const equipamentos =
-    carregarDados('equipamentos');
+    const usuario =
+    obterUsuario();
 
-    equipamentos.push({
-        nome:nome,
-        status:status
+    usuario.equipamentos.push({
+        nome,
+        status
     });
 
-    salvarDados(
-        'equipamentos',
-        equipamentos
-    );
+    salvarUsuario(usuario);
+
+    document.getElementById(
+        'equipamentoNome'
+    ).value='';
 
     renderizarEquipamentos();
-
-    document.getElementById('equipamentoNome').value='';
 }
 
-function alterarStatus(index,status){
+function alterarStatus(index,valor){
 
-    const equipamentos =
-    carregarDados('equipamentos');
+    const usuario =
+    obterUsuario();
 
-    equipamentos[index].status =
-    status;
+    usuario.equipamentos[index]
+    .status = valor;
 
-    salvarDados(
-        'equipamentos',
-        equipamentos
+    salvarUsuario(usuario);
+
+    renderizarEquipamentos();
+}
+
+function excluirEquipamento(index){
+
+    const usuario =
+    obterUsuario();
+
+    usuario.equipamentos.splice(
+        index,1
     );
+
+    salvarUsuario(usuario);
+
+    renderizarEquipamentos();
 }
 
 function renderizarEquipamentos(){
 
     const tabela =
-    document.getElementById('equipamentos');
+    document.getElementById(
+        'equipamentos'
+    );
 
-    tabela.innerHTML=`
-        <tr>
-            <th>Equipamento</th>
-            <th>Status</th>
-        </tr>
+    tabela.innerHTML = `
+    <tr>
+        <th>Equipamento</th>
+        <th>Status</th>
+        <th>Ação</th>
+    </tr>
     `;
 
-    const equipamentos =
-    carregarDados('equipamentos');
+    const usuario =
+    obterUsuario();
 
-    equipamentos.forEach((equipamento,index)=>{
+    let disp=0;
+    let uso=0;
+    let man=0;
+
+    usuario.equipamentos.forEach(
+    (equip,index)=>{
+
+        if(equip.status==='Disponível')
+            disp++;
+
+        if(equip.status==='Em uso')
+            uso++;
+
+        if(equip.status==='Em manutenção')
+            man++;
 
         const linha =
         tabela.insertRow();
 
-        linha.insertCell(0).innerText =
-        equipamento.nome;
+        linha.insertCell(0)
+        .innerText =
+        equip.nome;
 
-        linha.insertCell(1).innerHTML=`
-            <select
-                onchange="alterarStatus(${index}, this.value)">
-                
-                <option value="Disponível"
-                ${equipamento.status === 'Disponível' ? 'selected' : ''}>
-                Disponível
-                </option>
+        linha.insertCell(1)
+        .innerHTML = `
+        <select
+        onchange="alterarStatus(${index},this.value)">
 
-                <option value="Em uso"
-                ${equipamento.status === 'Em uso' ? 'selected' : ''}>
-                Em uso
-                </option>
+            <option
+            ${equip.status==='Disponível'
+            ?'selected':''}>
+            Disponível
+            </option>
 
-                <option value="Em manutenção"
-                ${equipamento.status === 'Em manutenção' ? 'selected' : ''}>
-                Em manutenção
-                </option>
+            <option
+            ${equip.status==='Em uso'
+            ?'selected':''}>
+            Em uso
+            </option>
 
-            </select>
+            <option
+            ${equip.status==='Em manutenção'
+            ?'selected':''}>
+            Em manutenção
+            </option>
+
+        </select>
+        `;
+
+        linha.insertCell(2)
+        .innerHTML = `
+        <button
+        class="excluir"
+        onclick="excluirEquipamento(${index})">
+        🗑
+        </button>
         `;
     });
 
+    document.getElementById(
+        'totalEquipamentos'
+    ).innerText =
+    usuario.equipamentos.length;
+
+    document.getElementById(
+        'dispEquipamentos'
+    ).innerText = disp;
+
+    document.getElementById(
+        'usoEquipamentos'
+    ).innerText = uso;
+
+    document.getElementById(
+        'manEquipamentos'
+    ).innerText = man;
 }
 
-/* =========================
-   AGENDA
-========================= */
+/* AGENDA */
 
 function adicionarAgenda(){
 
     const data =
-    document.getElementById('data').value;
+    document.getElementById(
+        'data'
+    ).value;
 
     const hora =
-    document.getElementById('hora').value;
+    document.getElementById(
+        'hora'
+    ).value;
 
     const atividade =
-    document.getElementById('atividade').value;
+    document.getElementById(
+        'atividade'
+    ).value.trim();
 
     if(
-        data === '' ||
-        atividade.trim() === ''
-    ){
-        return;
-    }
+        data==='' ||
+        atividade===''
+    ) return;
 
-    const agenda =
-    carregarDados('agenda');
+    const usuario =
+    obterUsuario();
 
-    agenda.push({
-        data:data,
-        hora:hora,
-        atividade:atividade
+    usuario.agenda.push({
+        data,
+        hora,
+        atividade
     });
 
-    salvarDados(
-        'agenda',
-        agenda
-    );
+    salvarUsuario(usuario);
 
     renderizarAgenda();
 
-    document.getElementById('atividade').value='';
+    document.getElementById(
+        'atividade'
+    ).value='';
+}
+
+function concluirAgenda(index){
+
+    const usuario =
+    obterUsuario();
+
+    usuario.historico.push(
+        usuario.agenda[index]
+    );
+
+    usuario.agenda.splice(
+        index,1
+    );
+
+    salvarUsuario(usuario);
+
+    renderizarAgenda();
+    renderizarHistorico();
+}
+
+function excluirAgenda(index){
+
+    const usuario =
+    obterUsuario();
+
+    usuario.agenda.splice(
+        index,1
+    );
+
+    salvarUsuario(usuario);
+
+    renderizarAgenda();
 }
 
 function renderizarAgenda(){
 
     const lista =
-    document.getElementById('agenda');
+    document.getElementById(
+        'agenda'
+    );
 
     lista.innerHTML='';
 
-    const agenda =
-    carregarDados('agenda');
+    const usuario =
+    obterUsuario();
 
-    agenda.forEach(item=>{
+    usuario.agenda.forEach(
+    (item,index)=>{
 
         const li =
         document.createElement('li');
 
-        li.innerText =
-        `${item.data} - ${item.hora} | ${item.atividade}`;
+        li.innerHTML = `
+        ${item.data}
+        ${item.hora}
+        -
+        ${item.atividade}
+
+        <button
+        class="concluir"
+        onclick="concluirAgenda(${index})">
+        Concluir
+        </button>
+
+        <button
+        class="excluir"
+        onclick="excluirAgenda(${index})">
+        🗑
+        </button>
+        `;
 
         lista.appendChild(li);
     });
-
 }
 
-/* =========================
-   INICIALIZAÇÃO
-========================= */
+/* HISTÓRICO */
 
-window.onload = function(){
+function renderizarHistorico(){
 
-    if(carregarDados('checklist').length === 0){
+    const lista =
+    document.getElementById(
+        'historico'
+    );
 
-        salvarDados('checklist',[
-            {texto:'Câmera', concluido:false},
-            {texto:'Cartão de memória', concluido:false},
-            {texto:'Baterias', concluido:false},
-            {texto:'Tripé', concluido:false}
-        ]);
-    }
+    lista.innerHTML='';
+
+    const usuario =
+    obterUsuario();
+
+    usuario.historico.forEach(
+    item=>{
+
+        const li =
+        document.createElement('li');
+
+        li.innerHTML =
+        `✔ ${item.data} - ${item.atividade}`;
+
+        lista.appendChild(li);
+    });
+}
+
+function renderizarTudo(){
 
     renderizarChecklist();
     renderizarEquipamentos();
     renderizarAgenda();
-};
+    renderizarHistorico();
+}
 
 </script>
 
