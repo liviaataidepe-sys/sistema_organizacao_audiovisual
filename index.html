@@ -266,7 +266,7 @@ Adicionar
 
 <div class="card">
 
-<h2>✔ Histórico de Atividades Concluídas</h2>
+<h2>📁 Histórico de Atividades Concluídas</h2>
 
 <ul id="historico"></ul>
 
@@ -694,6 +694,20 @@ function concluirAgenda(index){
     renderizarHistorico();
 }
 
+function excluirHistorico(index){
+
+    const usuario =
+    obterUsuario();
+
+    usuario.historico.splice(
+        index,1
+    );
+
+    salvarUsuario(usuario);
+
+    renderizarHistorico();
+}
+
 function excluirAgenda(index){
 
     const usuario =
@@ -764,13 +778,23 @@ function renderizarHistorico(){
     obterUsuario();
 
     usuario.historico.forEach(
-    item=>{
+    (item,index)=>{
 
         const li =
         document.createElement('li');
 
-        li.innerHTML =
-        `✔ ${item.data} - ${item.atividade}`;
+        li.innerHTML = `
+        ✔ ${item.data}
+        ${item.hora || ''}
+        -
+        ${item.atividade}
+
+        <button
+        class="excluir"
+        onclick="excluirHistorico(${index})">
+        🗑
+        </button>
+        `;
 
         lista.appendChild(li);
     });
