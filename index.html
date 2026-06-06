@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Sistema de Organização Audiovisual</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+}
+
+h1{
+    text-align:center;
+    color:#222;
+    margin-bottom:30px;
+}
+
+section{
+    background:white;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+h2{
+    margin-top:0;
+    color:#333;
+}
+
+input,
+select,
+button{
+    padding:10px;
+    margin:5px;
+}
+
+button{
+    background:#2563eb;
+    color:white;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#1d4ed8;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+}
+
+th, td{
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:left;
+}
+
+th{
+    background:#f0f0f0;
+}
+
+ul{
+    padding-left:20px;
+}
+
+li{
+    margin-bottom:8px;
+}
+
+.form-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:10px;
+}
+
+.form-row input,
+.form-row select{
+    flex:1;
+    min-width:180px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🎬 Sistema de Organização Audiovisual</h1>
+
+<section>
+
+<h2>✅ Checklist de Gravação</h2>
+
+<ul id="checklist"></ul>
+
+<div class="form-row">
+    <input
+    type="text"
+    id="novoItem"
+    placeholder="Novo item do checklist">
+
+    <button onclick="adicionarChecklist()">
+        Adicionar
+    </button>
+</div>
+
+</section>
+
+<section>
+
+<h2>🎥 Organizador de Equipamentos</h2>
+
+<table id="equipamentos">
+    <tr>
+        <th>Equipamento</th>
+        <th>Status</th>
+    </tr>
+</table>
+
+<div class="form-row">
+
+    <input
+    type="text"
+    id="equipamentoNome"
+    placeholder="Nome do equipamento">
+
+    <select id="equipamentoStatus">
+        <option>Disponível</option>
+        <option>Em uso</option>
+        <option>Em manutenção</option>
+    </select>
+
+    <button onclick="adicionarEquipamento()">
+        Adicionar
+    </button>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>📅 Agenda de Produção</h2>
+
+<ul id="agenda"></ul>
+
+<div class="form-row">
+
+    <input type="date" id="data">
+
+    <input type="time" id="hora">
+
+    <input
+    type="text"
+    id="atividade"
+    placeholder="Descrição da atividade">
+
+    <button onclick="adicionarAgenda()">
+        Adicionar
+    </button>
+
+</div>
+
+</section>
+
+</div>
+
+<script>
+
+/* =========================
+   LOCAL STORAGE
+========================= */
+
+function salvarDados(chave,dados){
+    localStorage.setItem(
+        chave,
+        JSON.stringify(dados)
+    );
+}
+
+function carregarDados(chave){
+    const dados =
+    localStorage.getItem(chave);
+
+    return dados
+        ? JSON.parse(dados)
+        : [];
+}
+
+/* =========================
+   CHECKLIST
+========================= */
+
+function adicionarChecklist(){
+
+    const texto =
+    document.getElementById('novoItem').value;
+
+    if(texto.trim() === '') return;
+
+    const checklist =
+    carregarDados('checklist');
+
+    checklist.push({
+        texto:texto,
+        concluido:false
+    });
+
+    salvarDados(
+        'checklist',
+        checklist
+    );
+
+    renderizarChecklist();
+
+    document.getElementById('novoItem').value='';
+}
+
+function alterarChecklist(index,status){
+
+    const checklist =
+    carregarDados('checklist');
+
+    checklist[index].concluido =
+    status;
+
+    salvarDados(
+        'checklist',
+        checklist
+    );
+}
+
+function renderizarChecklist(){
+
+    const lista =
+    document.getElementById('checklist');
+
+    lista.innerHTML='';
+
+    const checklist =
+    carregarDados('checklist');
+
+    checklist.forEach((item,index)=>{
+
+        const li =
+        document.createElement('li');
+
+        li.innerHTML=`
+            <input
+                type="checkbox"
+                ${item.concluido ? 'checked' : ''}
+                onchange="alterarChecklist(${index}, this.checked)">
+            ${item.texto}
+        `;
+
+        lista.appendChild(li);
+    });
+
+}
+
+/* =========================
+   EQUIPAMENTOS
+========================= */
+
+function adicionarEquipamento(){
+
+    const nome =
+    document.getElementById('equipamentoNome').value;
+
+    const status =
+    document.getElementById('equipamentoStatus').value;
+
+    if(nome.trim() === '') return;
+
+    const equipamentos =
+    carregarDados('equipamentos');
+
+    equipamentos.push({
+        nome:nome,
+        status:status
+    });
+
+    salvarDados(
+        'equipamentos',
+        equipamentos
+    );
+
+    renderizarEquipamentos();
+
+    document.getElementById('equipamentoNome').value='';
+}
+
+function alterarStatus(index,status){
+
+    const equipamentos =
+    carregarDados('equipamentos');
+
+    equipamentos[index].status =
+    status;
+
+    salvarDados(
+        'equipamentos',
+        equipamentos
+    );
+}
+
+function renderizarEquipamentos(){
+
+    const tabela =
+    document.getElementById('equipamentos');
+
+    tabela.innerHTML=`
+        <tr>
+            <th>Equipamento</th>
+            <th>Status</th>
+        </tr>
+    `;
+
+    const equipamentos =
+    carregarDados('equipamentos');
+
+    equipamentos.forEach((equipamento,index)=>{
+
+        const linha =
+        tabela.insertRow();
+
+        linha.insertCell(0).innerText =
+        equipamento.nome;
+
+        linha.insertCell(1).innerHTML=`
+            <select
+                onchange="alterarStatus(${index}, this.value)">
+                
+                <option value="Disponível"
+                ${equipamento.status === 'Disponível' ? 'selected' : ''}>
+                Disponível
+                </option>
+
+                <option value="Em uso"
+                ${equipamento.status === 'Em uso' ? 'selected' : ''}>
+                Em uso
+                </option>
+
+                <option value="Em manutenção"
+                ${equipamento.status === 'Em manutenção' ? 'selected' : ''}>
+                Em manutenção
+                </option>
+
+            </select>
+        `;
+    });
+
+}
+
+/* =========================
+   AGENDA
+========================= */
+
+function adicionarAgenda(){
+
+    const data =
+    document.getElementById('data').value;
+
+    const hora =
+    document.getElementById('hora').value;
+
+    const atividade =
+    document.getElementById('atividade').value;
+
+    if(
+        data === '' ||
+        atividade.trim() === ''
+    ){
+        return;
+    }
+
+    const agenda =
+    carregarDados('agenda');
+
+    agenda.push({
+        data:data,
+        hora:hora,
+        atividade:atividade
+    });
+
+    salvarDados(
+        'agenda',
+        agenda
+    );
+
+    renderizarAgenda();
+
+    document.getElementById('atividade').value='';
+}
+
+function renderizarAgenda(){
+
+    const lista =
+    document.getElementById('agenda');
+
+    lista.innerHTML='';
+
+    const agenda =
+    carregarDados('agenda');
+
+    agenda.forEach(item=>{
+
+        const li =
+        document.createElement('li');
+
+        li.innerText =
+        `${item.data} - ${item.hora} | ${item.atividade}`;
+
+        lista.appendChild(li);
+    });
+
+}
+
+/* =========================
+   INICIALIZAÇÃO
+========================= */
+
+window.onload = function(){
+
+    if(carregarDados('checklist').length === 0){
+
+        salvarDados('checklist',[
+            {texto:'Câmera', concluido:false},
+            {texto:'Cartão de memória', concluido:false},
+            {texto:'Baterias', concluido:false},
+            {texto:'Tripé', concluido:false}
+        ]);
+    }
+
+    renderizarChecklist();
+    renderizarEquipamentos();
+    renderizarAgenda();
+};
+
+</script>
+
+</body>
+</html>
